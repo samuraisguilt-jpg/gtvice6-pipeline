@@ -1,0 +1,26 @@
+name: GTVice6 Cover Art
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'   # every 12 hours = hard ceiling of ~10 images/day (2 runs x 5/run)
+  workflow_dispatch:
+
+jobs:
+  generate-covers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate cover art
+        run: node gtvice6-cover-art.js
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}

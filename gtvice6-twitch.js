@@ -14,7 +14,7 @@ const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
 
 // EDIT THIS: exact Twitch usernames (lowercase, no @) you want prioritized.
 // Verify these are correct/active before relying on them — seed list only.
-const CURATED_LOGINS = ['broughy1322', 'mrbossftw', 'sashagrey'];
+const CURATED_LOGINS = ['sashagrey', 'summit1g', 'xqc', 'jltomy', 'sykkuno', 'pokimane', 'esfandtv'];
 
 const SEARCH_QUERIES = ['GTA 6', 'GTA VI'];
 const DESIRED_TOTAL = 8; // how many cards to try to fill the strip with

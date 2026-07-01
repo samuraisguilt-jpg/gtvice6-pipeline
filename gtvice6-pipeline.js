@@ -167,33 +167,3 @@ async function run() {
 
 run().catch(console.error);
 
-/*
-════════════════════════════════════════════════════════
-  GITHUB ACTIONS WORKFLOW (free, runs every 30 minutes)
-  Save as: .github/workflows/pipeline.yml
-════════════════════════════════════════════════════════
-
-name: GTVice6 News Pipeline
-on:
-  schedule:
-    - cron: '*/30 * * * *'   # every 30 minutes
-  workflow_dispatch:           # manual run button in GitHub
-
-jobs:
-  run-pipeline:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: node gtvice6-pipeline.js
-        env:
-          SUPABASE_URL:          ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY:  ${{ secrets.SUPABASE_SERVICE_KEY }}
-          ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
-
-  (Add these 3 secrets in GitHub repo → Settings → Secrets → Actions)
-════════════════════════════════════════════════════════
-*/

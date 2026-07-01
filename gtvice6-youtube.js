@@ -15,7 +15,7 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 // EDIT THIS: the handle/username/custom-slug part of the channel's URL
 // (whatever comes after youtube.com/, /c/, /@, or /user/).
 // Verify these resolve correctly the first time this runs — check the logs.
-const YOUTUBE_CHANNELS = ['MrBossFTW', 'DailyModder'];
+const YOUTUBE_CHANNELS = ['MrBossFTW', 'DarkViperAU'];
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 

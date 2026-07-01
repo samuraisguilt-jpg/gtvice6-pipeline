@@ -1,0 +1,16 @@
+{
+  "name": "gtvice6-pipeline",
+  "version": "1.0.0",
+  "description": "GTVice6 news pipeline — RSS + AI → Supabase",
+  "type": "module",
+  "main": "gtvice6-pipeline.js",
+  "scripts": {
+    "start": "node gtvice6-pipeline.js",
+    "dev": "node --watch gtvice6-pipeline.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@supabase/supabase-js": "^2.49.0",
+    "rss-parser": "^3.13.0"
+  }
+}

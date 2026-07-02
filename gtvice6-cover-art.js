@@ -44,11 +44,13 @@ function buildPrompt(story) {
   const mood = MOOD_BY_CATEGORY[story.category] || MOOD_BY_CATEGORY.community;
 
   return `${STYLE_PREFIX} ${mood}\n\n`
-    + `The image MUST feature at least one or two original, invented human characters as the focus of `
-    + `the shot — not a distant figure, not an empty street or skyline alone. Show them actively doing `
-    + `something physical and specific: reacting, gesturing, talking, looking at a phone or screen, `
-    + `walking mid-stride — whatever fits the moment below. Frame it like a dynamic scene from a story, `
-    + `not a static establishing shot.\n\n`
+    + `Compose this as a MEDIUM SHOT OR CLOSE-UP centered on one or two original, invented human `
+    + `characters — their face and upper body should fill a large portion of the frame, in sharp focus. `
+    + `Do NOT compose this as a wide establishing shot, skyline, landscape, or empty street — the `
+    + `environment (skyline, neon signage, vehicles, crowd, etc.) should only appear as a blurred or `
+    + `atmospheric backdrop behind the character(s), never as the main subject of the frame. Show the `
+    + `character(s) actively doing something physical and specific: reacting, gesturing, talking, `
+    + `looking at a phone or screen, mid-stride — whatever fits the moment below.\n\n`
     + `Translate this headline into one concrete visual moment (do not render any text or words in the `
     + `image itself): "${story.title}". Additional context for the scene: ${basis}\n\n`
     + `These are invented, original-looking people and an original scene only — not a likeness of any `

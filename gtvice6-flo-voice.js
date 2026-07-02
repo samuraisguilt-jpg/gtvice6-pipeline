@@ -23,22 +23,27 @@ const SEGMENT_DEFS = [
   {
     id: 'top_story',
     label: 'Top story',
-    style: `Give the real headline like it's breaking news, hype but factual. No "unconfirmed" hedging needed unless the story itself is a rumor.`,
+    style: `Give the real headline like it's breaking news, hype but factual. No "unconfirmed" hedging needed unless the story itself is a rumor. 30-45 words.`,
   },
   {
     id: 'server_spotlight',
     label: 'Server spotlight',
-    style: `This is community/private-server gossip. Sell it like insider tea — "yo have you heard over on..." energy — but you MUST make clear this is community chatter, not official news. Never state it as confirmed fact.`,
+    style: `This is community/private-server gossip. Sell it like insider tea — "yo have you heard over on..." energy — but you MUST make clear this is community chatter, not official news. Never state it as confirmed fact. 30-45 words.`,
   },
   {
     id: 'rumor_control',
     label: 'Rumor control',
-    style: `This is a rumor. Be playful about it but explicitly call it a rumor / unconfirmed / "take it with a grain of salt." Never state it as fact.`,
+    style: `This is a rumor. Be playful about it but explicitly call it a rumor / unconfirmed / "take it with a grain of salt." Never state it as fact. 30-45 words.`,
   },
   {
     id: 'creator_watch',
     label: 'Creator watch',
-    style: `Hype up this streamer/creator like you're calling their run live. High energy, like a sports announcer meets radio DJ.`,
+    style: `Hype up this streamer/creator like you're calling their run live. High energy, like a sports announcer meets radio DJ. 25-40 words.`,
+  },
+  {
+    id: 'quick_hits',
+    label: 'Quick hits',
+    style: `Rapid-fire "and in other news..." roundup of BOTH stories given below, back to back, high energy, like a DJ blasting through headlines before the next track drops. Keep any rumor clearly labeled as a rumor. 50-70 words total.`,
   },
 ];
 
@@ -62,6 +67,15 @@ async function fetchSourceStoryAny(categories) {
   return data && data[0] ? data[0] : null;
 }
 
+async function fetchLatestStories(limit) {
+  const { data } = await supabase
+    .from('stories')
+    .select('title,summary,category')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  return data || [];
+}
+
 async function fetchTopCreator() {
   const { data } = await supabase
     .from('live_streams')
@@ -73,7 +87,7 @@ async function fetchTopCreator() {
 }
 
 async function writeLine(segmentDef, sourceText) {
-  const system = `You are writing 1-2 spoken sentences (max 35 words) for "FLO", the AI DJ/news anchor character on GTVice6, a GTA6 fan community site. FLO's voice: hype Miami radio DJ energy, confident, funny, a little sarcastic, blunt jokes, but ultimately friendly — the guy who always knows the tea. Write ONLY the line he'd say out loud. No stage directions, no quotation marks, no emoji, no hashtags. It must be speakable text only.`;
+  const system = `You are writing spoken lines for "FLO", the AI DJ/news anchor character on GTVice6, a GTA6 fan community site. FLO's voice: hype Miami radio DJ energy, confident, funny, a little sarcastic, blunt jokes, but ultimately friendly — the guy who always knows the tea. Follow the word count given in the instruction. Write ONLY the line he'd say out loud. No stage directions, no quotation marks, no emoji, no hashtags. It must be speakable text only.`;
   const user = `Segment type: ${segmentDef.label}\nInstruction: ${segmentDef.style}\n\nSource content to riff on:\n${sourceText}\n\nWrite FLO's line now.`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -136,6 +150,14 @@ async function run() {
         if (c) sourceText = c.is_live
           ? `${c.display_name || c.twitch_login} is live right now: "${c.title}"`
           : `${c.display_name || c.twitch_login} recently posted: "${c.title}"`;
+      } else if (def.id === 'quick_hits') {
+        const latest = await fetchLatestStories(5);
+        const picks = latest.slice(2, 4); // skip the freshest ones already used elsewhere, grab the next 2
+        if (picks.length) {
+          sourceText = picks
+            .map((s, idx) => `Story ${idx + 1} (category: ${s.category}): ${s.title} — ${s.summary}`)
+            .join('\n');
+        }
       }
 
       if (!sourceText) {

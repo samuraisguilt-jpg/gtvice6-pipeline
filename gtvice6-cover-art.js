@@ -56,12 +56,13 @@ async function generateImage(prompt) {
         'Content-Type': 'application/json',
         'x-goog-api-key': GEMINI_API_KEY,
       },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
-      }),
-    }
-  );
+     body: JSON.stringify({
+  contents: [{ parts: [{ text: prompt }] }],
+  generationConfig: {
+    responseModalities: ['TEXT', 'IMAGE'],
+    imageConfig: { aspectRatio: '16:9' },
+  },
+}),
 
   if (!res.ok) {
     const errText = await res.text();

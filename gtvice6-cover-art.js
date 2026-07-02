@@ -1,5 +1,5 @@
 // gtvice6-cover-art.js
-// Runs every 15 minutes. Finds stories that don't have cover art yet
+// Runs every 12 hours (see cover-art.yml). Finds stories that don't have cover art yet
 // and generates a REAL, story-specific GTVice6-style scene for each one
 // (not a reusable template) using Gemini image generation.
 //
@@ -16,7 +16,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const IMAGE_MODEL = 'gemini-2.5-flash-image'; // stable as of mid-2026 ("Nano Banana")
 
 // How many stories to draw per run. Keeps cost/time bounded per run;
-// backlog just gets picked up on the next run 15 min later.
+// backlog just gets picked up on the next run.
 const BATCH_SIZE = 5;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -56,13 +56,15 @@ async function generateImage(prompt) {
         'Content-Type': 'application/json',
         'x-goog-api-key': GEMINI_API_KEY,
       },
-     body: JSON.stringify({
-  contents: [{ parts: [{ text: prompt }] }],
-  generationConfig: {
-    responseModalities: ['TEXT', 'IMAGE'],
-    imageConfig: { aspectRatio: '16:9' },
-  },
-}),
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseModalities: ['TEXT', 'IMAGE'],
+          imageConfig: { aspectRatio: '16:9' },
+        },
+      }),
+    }
+  );
 
   if (!res.ok) {
     const errText = await res.text();

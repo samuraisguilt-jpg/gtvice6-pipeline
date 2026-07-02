@@ -21,18 +21,39 @@ const BATCH_SIZE = 5;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-const STYLE_PREFIX = `Original painterly video-game-style illustration in a retro-futuristic Miami vice-city `
-  + `aesthetic — hot pink and cyan neon lighting, glowing skyline at dusk, cinematic composition, `
-  + `high detail, dramatic lighting, photorealistic rendering quality. `
-  + `Include original human characters relevant to the scene, doing the action described. `
-  + `No text, no logos, no watermarks, no real brand names or trademarks. `
-  + `These must be entirely original characters and an original scene — `
-  + `not likenesses of real people, not any existing copyrighted game's characters, `
-  + `not a screenshot or recreation of any existing video game.`;
+// Same proven style language that made FLO come out AAA-quality instead of generic.
+// Single consistent aesthetic, no contradicting terms (no "painterly" fighting
+// "photorealistic" like the old version had).
+const STYLE_PREFIX = `Polished AAA open-world crime game cover-art key art, the level of finish seen in `
+  + `official big-budget game marketing art. Glossy semi-realistic 3D render, cinematic dramatic `
+  + `lighting, sun-soaked Miami vice-city sunset palette of hot pink, orange, gold and cyan neon, `
+  + `dramatic rim lighting, sharp focus, ultra high detail, professional game-studio production quality.`;
+
+// One line per category so every cover has a distinct mood instead of the same
+// empty skyline every time.
+const MOOD_BY_CATEGORY = {
+  official:  'Triumphant, official-announcement energy — dramatic golden-hour light breaking through the neon skyline behind the characters.',
+  rumor:     'Mysterious, shadowy, uncertain mood — fog rolling through the street, dim flickering neon signage, characters caught mid-conversation or mid-glance over the shoulder.',
+  streamer:  'Vibrant broadcast energy — glowing screen and monitor light on the characters\' faces, camera and headset silhouettes in the foreground.',
+  servers:   'Bustling, crowded city energy — packed neon streets, motion blur, a huge crowd of characters filling the frame.',
+  community: 'Warm, communal street-level scene — a small group of characters gathered together, talking and laughing under neon signs.',
+};
 
 function buildPrompt(story) {
   const basis = story.summary || story.title;
-  return `${STYLE_PREFIX} Depict this scene: ${basis}`;
+  const mood = MOOD_BY_CATEGORY[story.category] || MOOD_BY_CATEGORY.community;
+
+  return `${STYLE_PREFIX} ${mood}\n\n`
+    + `The image MUST feature at least one or two original, invented human characters as the focus of `
+    + `the shot — not a distant figure, not an empty street or skyline alone. Show them actively doing `
+    + `something physical and specific: reacting, gesturing, talking, looking at a phone or screen, `
+    + `walking mid-stride — whatever fits the moment below. Frame it like a dynamic scene from a story, `
+    + `not a static establishing shot.\n\n`
+    + `Translate this headline into one concrete visual moment (do not render any text or words in the `
+    + `image itself): "${story.title}". Additional context for the scene: ${basis}\n\n`
+    + `These are invented, original-looking people and an original scene only — not a likeness of any `
+    + `real person, not any existing copyrighted game's characters, not a screenshot or recreation of `
+    + `any existing video game. No text, no logos, no watermarks, no real brand names.`;
 }
 
 async function pickCandidateStories() {
@@ -60,7 +81,10 @@ async function generateImage(prompt) {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           responseModalities: ['TEXT', 'IMAGE'],
-          imageConfig: { aspectRatio: '16:9' },
+          imageConfig: {
+            aspectRatio: '16:9',
+            imageSize: '2K',
+          },
         },
       }),
     }
